@@ -1,0 +1,60 @@
+{
+	"name": "DFTITLE",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_TitleMaster",
+						"type": "DatasetReference"
+					},
+					"name": "TitleCSV"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_TitleMaster",
+						"type": "DatasetReference"
+					},
+					"name": "TitleSQL"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectTitle"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          TitleCode as string,",
+				"          TitleDescription as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TitleCSV",
+				"TitleCSV select(mapColumn(",
+				"          TitleCode,",
+				"          TitleDescription",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectTitle",
+				"SelectTitle sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          TitleCode as string,",
+				"          TitleDescription as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> TitleSQL"
+			]
+		}
+	}
+}

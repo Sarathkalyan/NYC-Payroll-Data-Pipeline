@@ -1,0 +1,118 @@
+{
+	"name": "PL_Main_NYCPayroll",
+	"properties": {
+		"activities": [
+			{
+				"name": "Run_AgencyMaster",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Load_AgencyMaster",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Run_EmpMaster",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Run_AgencyMaster",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Load_EmpMaster",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Run_TitleMaster",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Run_EmpMaster",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Load_TitleMaster",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Run_NYCPayroll2020",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Run_TitleMaster",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Load_NYCPayroll2020",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Run_NYCPayroll2021",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Run_NYCPayroll2020",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Load_NYCPayroll2021",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-07-08T12:28:45Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

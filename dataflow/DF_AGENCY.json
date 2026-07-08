@@ -1,0 +1,60 @@
+{
+	"name": "DF_AGENCY",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AgencyMaster",
+						"type": "DatasetReference"
+					},
+					"name": "AgencyCSV"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_AgencyMaster",
+						"type": "DatasetReference"
+					},
+					"name": "AgencySQL"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectAgency"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          AgencyID as string,",
+				"          AgencyName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> AgencyCSV",
+				"AgencyCSV select(mapColumn(",
+				"          AgencyID,",
+				"          AgencyName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectAgency",
+				"SelectAgency sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          AgencyID as string,",
+				"          AgencyName as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> AgencySQL"
+			]
+		}
+	}
+}

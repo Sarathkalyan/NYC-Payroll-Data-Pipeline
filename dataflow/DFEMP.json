@@ -1,0 +1,63 @@
+{
+	"name": "DFEMP",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_EmpMaster",
+						"type": "DatasetReference"
+					},
+					"name": "EmpCSV"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_EmpMaster",
+						"type": "DatasetReference"
+					},
+					"name": "EmpSQL"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectEmp"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmployeeID as string,",
+				"          LastName as string,",
+				"          FirstName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EmpCSV",
+				"EmpCSV select(mapColumn(",
+				"          EmployeeID,",
+				"          LastName,",
+				"          FirstName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectEmp",
+				"SelectEmp sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EmployeeID as string,",
+				"          LastName as string,",
+				"          FirstName as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> EmpSQL"
+			]
+		}
+	}
+}
